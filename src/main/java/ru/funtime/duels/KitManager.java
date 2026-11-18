@@ -3,6 +3,8 @@ package ru.funtime.duels;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.entity.Player;
 import java.io.*;
 import java.util.*;
