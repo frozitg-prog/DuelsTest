@@ -12,14 +12,16 @@ import java.util.*;
 public final class KitManager {
     private final FunTimeDuels plugin; private final File file; private final YamlConfiguration cfg;
     public KitManager(FunTimeDuels p) { plugin=p; file=new File(p.getDataFolder(),"kits.yml"); if(!file.exists()) try{p.getDataFolder().mkdirs();file.createNewFile();}catch(Exception ignored){} cfg=YamlConfiguration.loadConfiguration(file); }
-    public boolean create(String name, Player p) {
+    public boolean create(String name, Player p, boolean keepFood) {
         String path="kits."+name.toLowerCase(Locale.ROOT);
         if(cfg.contains(path)) return false;
         cfg.set(path+".inventory", encode(p.getInventory().getContents()));
         cfg.set(path+".armor", encode(p.getInventory().getArmorContents()));
         cfg.set(path+".offhand", encode(new ItemStack[]{p.getInventory().getItemInOffHand()}));
+        cfg.set(path+".keep-food", keepFood);
         save(); return true;
     }
+    public boolean keepsFood(String n){return cfg.getBoolean("kits."+n.toLowerCase(Locale.ROOT)+".keep-food", true);}
     public boolean exists(String n){return cfg.contains("kits."+n.toLowerCase(Locale.ROOT));}
     public Set<String> names(){ConfigurationSection s=cfg.getConfigurationSection("kits");return s==null?Collections.emptySet():s.getKeys(false);}
     public void give(String n,Player p) {
