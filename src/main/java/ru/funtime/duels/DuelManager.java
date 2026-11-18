@@ -81,7 +81,8 @@ public final class DuelManager implements CommandExecutor, Listener {
     }
     @EventHandler public void onHunger(FoodLevelChangeEvent e){
         if(!(e.getEntity() instanceof Player p))return;
-        if(matches.containsKey(p.getUniqueId())){
+        Match m=matches.get(p.getUniqueId());
+        if(m!=null&&kits.keepsFood(m.kit)){
             e.setCancelled(true);
             p.setFoodLevel(20);
             p.setSaturation(20f);
