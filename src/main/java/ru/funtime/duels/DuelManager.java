@@ -21,6 +21,7 @@ public final class DuelManager implements CommandExecutor, Listener {
     public DuelManager(FunTimeDuels p,ArenaManager a,KitManager k,StatsManager s){plugin=p;arenas=a;kits=k;stats=s;}
     public boolean isArenaBusy(String name){return busyArenas.contains(name.toLowerCase(Locale.ROOT));}
     public int queueCount(String kit){Deque<UUID> q=queues.get(kit.toLowerCase(Locale.ROOT));return q==null?0:q.size();}
+    public boolean isInQueue(UUID playerId,String kit){Deque<UUID> q=queues.get(kit.toLowerCase(Locale.ROOT));return q!=null&&q.contains(playerId);}
     @Override public boolean onCommand(CommandSender sender,Command command,String label,String[] args){
         if(!(sender instanceof Player p)){sender.sendMessage("Only players can use this command.");return true;}
         if(args.length!=1){p.sendMessage("§eИспользование: /duel <kit>");p.sendMessage("§7Доступные киты: §f"+String.join(", ",kits.names()));return true;}
