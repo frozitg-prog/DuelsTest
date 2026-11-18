@@ -79,6 +79,14 @@ public final class DuelManager implements CommandExecutor, Listener {
         Match m=matches.get(e.getPlayer().getUniqueId());if(m==null||!m.frozen||e.getTo()==null)return;
         if(e.getFrom().getX()!=e.getTo().getX()||e.getFrom().getY()!=e.getTo().getY()||e.getFrom().getZ()!=e.getTo().getZ())e.setTo(e.getFrom());
     }
+    @EventHandler public void onHunger(FoodLevelChangeEvent e){
+        if(!(e.getEntity() instanceof Player p))return;
+        if(matches.containsKey(p.getUniqueId())){
+            e.setCancelled(true);
+            p.setFoodLevel(20);
+            p.setSaturation(20f);
+        }
+    }
     @EventHandler public void onDamage(EntityDamageEvent e){
         if(!(e.getEntity() instanceof Player p))return;Match m=matches.get(p.getUniqueId());
         if(m!=null&&(!m.started||m.frozen||m.finished))e.setCancelled(true);
