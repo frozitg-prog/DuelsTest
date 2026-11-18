@@ -1,0 +1,9 @@
+# FunTimeDuels settings
+spawn: null
+messages:
+  prefix: "&6Duels &8» "
+queue:
+  arena-selection: random
+  warmup-seconds: 3
+  countdown-seconds: 3
+  post-match-seconds: 3
