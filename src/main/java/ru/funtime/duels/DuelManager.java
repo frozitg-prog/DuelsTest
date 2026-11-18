@@ -20,6 +20,7 @@ public final class DuelManager implements CommandExecutor, Listener {
 
     public DuelManager(FunTimeDuels p,ArenaManager a,KitManager k,StatsManager s){plugin=p;arenas=a;kits=k;stats=s;}
     public boolean isArenaBusy(String name){return busyArenas.contains(name.toLowerCase(Locale.ROOT));}
+    public int queueCount(String kit){Deque<UUID> q=queues.get(kit.toLowerCase(Locale.ROOT));return q==null?0:q.size();}
     @Override public boolean onCommand(CommandSender sender,Command command,String label,String[] args){
         if(!(sender instanceof Player p)){sender.sendMessage("Only players can use this command.");return true;}
         if(args.length!=1){p.sendMessage("§eИспользование: /duel <kit>");p.sendMessage("§7Доступные киты: §f"+String.join(", ",kits.names()));return true;}
@@ -90,7 +91,7 @@ public final class DuelManager implements CommandExecutor, Listener {
         Match m=matches.get(e.getPlayer().getUniqueId());if(m!=null&&m.finished)Bukkit.getScheduler().runTask(plugin,()->e.getPlayer().setGameMode(GameMode.SPECTATOR));
     }
     private void endMatch(Match m){
-        for(Player p:List.of(m.a(),m.b()))if(p!=null&&p.isOnline()){m.restore(p);p.teleport(plugin.getConfig().getLocation("spawn",p.getWorld().getSpawnLocation()));p.sendMessage("§eДуэль завершена.");}
+        for(UUID id:List.of(m.aId,m.bId)){Player p=Bukkit.getPlayer(id);if(p!=null&&p.isOnline()){m.restore(p);p.teleport(plugin.getConfig().getLocation("spawn",p.getWorld().getSpawnLocation()));p.sendMessage("§eДуэль завершена.");}}
         matches.remove(m.aId);matches.remove(m.bId);busyArenas.remove(m.arena.toLowerCase(Locale.ROOT));deathLocations.remove(m.aId);deathLocations.remove(m.bId);
     }
     @EventHandler public void onQuit(PlayerQuitEvent e){
@@ -98,7 +99,7 @@ public final class DuelManager implements CommandExecutor, Listener {
         for(Deque<UUID> q:queues.values())q.remove(id);
         Match m=matches.get(id);if(m!=null&&!m.finished){Player winner=m.other(e.getPlayer());if(winner!=null){stats.record(winner.getUniqueId(),winner.getName(),true,true);winner.sendMessage("§aПротивник вышел. Победа засчитана.");}stats.record(id,e.getPlayer().getName(),false,false);m.finished=true;Bukkit.getScheduler().runTaskLater(plugin,()->endMatch(m),60L);}
     }
-    public void shutdown(){for(Match m:new HashSet<>(matches.values())){for(Player p:List.of(m.a(),m.b()))if(p!=null&&p.isOnline())m.restore(p);}matches.clear();queues.clear();}
+    public void shutdown(){for(Match m:new HashSet<>(matches.values())){for(UUID id:List.of(m.aId,m.bId)){Player p=Bukkit.getPlayer(id);if(p!=null&&p.isOnline())m.restore(p);}}matches.clear();queues.clear();}
     private final class Match {
         final UUID aId,bId;final String kit,arena;final ItemStack[] aInv,bInv,aArm,bArm;final ItemStack aOff,bOff;final GameMode aMode,bMode;final double aHealth,bHealth;final int aFood,bFood;final float aExp,bExp;final int aLevel,bLevel;final Collection<PotionEffect> aEffects,bEffects;
         boolean frozen,started,finished;
