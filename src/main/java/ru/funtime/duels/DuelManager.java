@@ -48,10 +48,23 @@ public final class DuelManager implements CommandExecutor, Listener {
         Match m=new Match(a,b,kit,arena);matches.put(a.getUniqueId(),m);matches.put(b.getUniqueId(),m);busyArenas.add(arena.toLowerCase(Locale.ROOT));
         m.save(a);m.save(b);kits.give(kit,a);kits.give(kit,b);
         a.setGameMode(GameMode.SURVIVAL);b.setGameMode(GameMode.SURVIVAL);
-        a.teleport(arenas.get(arena,"spawn1"));b.teleport(arenas.get(arena,"spawn2"));
+        Location spawn1=arenas.get(arena,"spawn1"),spawn2=arenas.get(arena,"spawn2");
+        if(spawn1==null||spawn2==null){
+            matches.remove(a.getUniqueId());matches.remove(b.getUniqueId());busyArenas.remove(arena.toLowerCase(Locale.ROOT));
+            a.sendMessage("§cНе удалось запустить дуэль: точки спавна арены не найдены.");
+            b.sendMessage("§cНе удалось запустить дуэль: точки спавна арены не найдены.");
+            return;
+        }
+        a.teleport(spawn1);b.teleport(spawn2);
         a.sendMessage("§aПротивник найден: §f"+b.getName());b.sendMessage("§aПротивник найден: §f"+a.getName());
-        a.sendTitle("§eОсмотр арены","§7У тебя 3 секунды",0,60,0);b.sendTitle("§eОсмотр арены","§7У тебя 3 секунды",0,60,0);
-        new BukkitRunnable(){int t=3;public void run(){if(m.finished){cancel();return;}if(t>0){t--;return;}countdown(m);cancel();}}.runTaskTimer(plugin,20L,20L);
+        new BukkitRunnable(){int t=2;public void run(){
+            if(m.finished){cancel();return;}
+            if(t>0){t--;return;}
+            Player p1=m.a(),p2=m.b();
+            if(p1==null||p2==null){cancel();return;}
+            p1.teleport(spawn1);p2.teleport(spawn2);
+            countdown(m);cancel();
+        }}.runTaskTimer(plugin,20L,20L);
     }
     private void countdown(Match m){
         m.frozen=true;
