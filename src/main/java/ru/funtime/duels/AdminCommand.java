@@ -15,8 +15,18 @@ public final class AdminCommand implements CommandExecutor {
         if(args[0].equalsIgnoreCase("setspawn")){plugin.getConfig().set("spawn",p.getLocation());plugin.saveConfig();p.sendMessage("§aТочка возврата установлена.");return true;}
         if(args[0].equalsIgnoreCase("reload")){plugin.reloadConfig();p.sendMessage("§aКонфигурация перезагружена.");return true;}
         if(args[0].equalsIgnoreCase("kit")){
-            if(args.length<3){p.sendMessage("§e/dueladmin kit create <name>");return true;}
-            if(args[1].equalsIgnoreCase("create")){if(kits.create(args[2],p))p.sendMessage("§aКит "+args[2]+" создан из твоего инвентаря.");else p.sendMessage("§cТакой кит уже существует.");return true;}
+            if(args.length<3){p.sendMessage("§e/dueladmin kit create <name> <keep-food:true|false>");return true;}
+            if(args[1].equalsIgnoreCase("create")){
+                boolean keepFood=true;
+                if(args.length>=4){
+                    if(args[3].equalsIgnoreCase("true")||args[3].equalsIgnoreCase("yes")||args[3].equalsIgnoreCase("да"))keepFood=true;
+                    else if(args[3].equalsIgnoreCase("false")||args[3].equalsIgnoreCase("no")||args[3].equalsIgnoreCase("нет"))keepFood=false;
+                    else {p.sendMessage("§cУкажи true или false.");return true;}
+                }
+                if(kits.create(args[2],p,keepFood))p.sendMessage("§aКит "+args[2]+" создан. Неограниченный голод: "+(keepFood?"§aвключён":"§cвыключен"));
+                else p.sendMessage("§cТакой кит уже существует.");
+                return true;
+            }
         }
         if(args[0].equalsIgnoreCase("arena")){
             if(args.length<3){p.sendMessage("§e/dueladmin arena create|delete|pos1|pos2|setspawn1|setspawn2 <name>");return true;}
@@ -30,5 +40,5 @@ public final class AdminCommand implements CommandExecutor {
         }
         help(p);return true;
     }
-    private void help(Player p){p.sendMessage("§6FunTimeDuels Admin");p.sendMessage("§e/dueladmin arena create <name>");p.sendMessage("§e/dueladmin arena pos1|pos2|setspawn1|setspawn2 <name>");p.sendMessage("§e/dueladmin arena delete <name>");p.sendMessage("§e/dueladmin kit create <name>");p.sendMessage("§e/dueladmin setspawn");p.sendMessage("§e/dueladmin reload");}
+    private void help(Player p){p.sendMessage("§6FunTimeDuels Admin");p.sendMessage("§e/dueladmin arena create <name>");p.sendMessage("§e/dueladmin arena pos1|pos2|setspawn1|setspawn2 <name>");p.sendMessage("§e/dueladmin arena delete <name>");p.sendMessage("§e/dueladmin kit create <name> <keep-food:true|false>");p.sendMessage("§e/dueladmin setspawn");p.sendMessage("§e/dueladmin reload");}
 }
