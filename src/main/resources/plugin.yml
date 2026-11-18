@@ -1,0 +1,17 @@
+name: FunTimeDuels
+version: 1.0.0
+main: ru.funtime.duels.FunTimeDuels
+api-version: '1.21'
+author: frozitg-prog
+softdepend: [PlaceholderAPI, DecentHolograms]
+commands:
+  duel:
+    description: Queue for a kit duel
+    usage: /duel <kit>
+  dueladmin:
+    description: Manage duels, arenas and kits
+    usage: /dueladmin
+    permission: funtimeduels.admin
+permissions:
+  funtimeduels.admin:
+    default: op
